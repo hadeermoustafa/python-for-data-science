@@ -2,11 +2,11 @@
 
 These are the two most common ways to hold a sequence of items in Python. Almost every data task starts with one of them: a column of numbers, a row of a table, a batch of file names.
 
-The one-sentence difference: **a list can be changed after you create it; a tuple cannot.**
+The one-sentence difference: **a list can be changed after you create it, a tuple cannot.**
 
-Think of a list as a shopping list written in pencil (you can add, cross out, and reorder), and a tuple as a printed ticket (what is written stays written).
+Think of a list as a shopping list written in pencil (you can add, cross out and reorder), and a tuple as a printed ticket (what is written stays written).
 
-> Every code block below is runnable. Copy it into a Python shell, a Jupyter notebook, or [Google Colab](https://colab.research.google.com) and change things to see what happens. Lines starting with `#` show the output.
+> Every code block below is runnable. Copy it into a Python shell, a Jupyter notebook or [Google Colab](https://colab.research.google.com) and change things to see what happens. Lines starting with `#` show the output.
 
 ---
 
@@ -105,6 +105,9 @@ print(x)            # [10, 30, 40]
 print(x.pop(0))     # 10   (pop removes AND returns the item)
 print(x)            # [30, 40]
 
+print(x.pop())      # 40   (no index given = the last item)
+print(x)            # [30]
+
 names = ["a", "b", "c", "b"]
 names.remove("b")   # removes only the FIRST "b"
 print(names)        # ['a', 'c', 'b']
@@ -125,12 +128,41 @@ print(l.count("b"))   # 2     how many times it appears
 print("c" in l)       # True  is it in the list?
 ```
 
-### Useful built-in functions
+`index()` raises a `ValueError` if the value isn't there, so check with `in` first when you're not sure:
 
 ```python
-print(len(fruits))            # 4
-print(max([3, 7, 2]))         # 7
-print(sum([3, 7, 2]))         # 12
+if "z" in l:
+    print(l.index("z"))
+else:
+    print("not found")   # not found
+```
+
+### Length: `len()`
+
+`len()` tells you how many items are in a list. It's also the safe way to find the last index: it's always `len(lst) - 1`.
+
+```python
+fruits = ["apple", "banana", "cherry", "date"]
+print(len(fruits))        # 4
+print(len([]))            # 0     an empty list has length 0
+print(fruits[len(fruits) - 1])   # date   (same as fruits[-1])
+```
+
+`len()` counts only the **top-level** items. A nested list counts as one item:
+
+```python
+print(len([1, [2, 3], 4]))   # 3
+```
+
+### Other useful built-in functions
+
+These work on lists of numbers:
+
+```python
+scores = [3, 7, 2]
+print(max(scores))   # 7     largest
+print(min(scores))   # 2     smallest
+print(sum(scores))   # 12    total
 ```
 
 ### Sorting
@@ -147,6 +179,14 @@ nums.sort()
 print(nums)                         # [1, 2, 5, 9]   (now changed)
 ```
 
+Both `sort()` and `sorted()` accept `reverse=True` for descending order. The in-place version looks like this:
+
+```python
+scores = [5, 2, 8, 1, 9]
+scores.sort(reverse=True)
+print(scores)   # [9, 8, 5, 2, 1]
+```
+
 You can sort by a rule with `key`:
 
 ```python
@@ -155,6 +195,21 @@ print(sorted(words, key=len))   # ['fig', 'pear', 'banana']   (shortest first)
 ```
 
 > **Common mistake:** `nums = nums.sort()` sets `nums` to `None`, because `sort()` changes the list in place and returns nothing. Write `nums.sort()` on its own line, or use `sorted()`.
+
+### Reversing
+
+`reverse()` flips the order of the list itself, in place. It does **not** sort, it just reverses whatever order is there.
+
+```python
+steps = [1, 2, 3, 4, 5]
+steps.reverse()
+print(steps)   # [5, 4, 3, 2, 1]
+```
+
+| Want to... | Use |
+|---|---|
+| reverse the list itself | `lst.reverse()` |
+| get a reversed copy and keep the original | `lst[::-1]` |
 
 ### Looping over a list
 
@@ -263,6 +318,35 @@ print(x, y)   # 4 3
 # star (*) collects the leftovers
 first, *rest = (1, 2, 3, 4)
 print(first, rest)   # 1 [2, 3, 4]
+```
+
+### Tuple methods and functions
+
+Because tuples can't change, they have only two methods, `count()` and `index()`. Both work like their list versions.
+
+```python
+fruits = ("apple", "banana", "apple", "orange")
+print(fruits.count("apple"))   # 2     how many times it appears
+print(fruits.index("apple"))   # 0     position of the FIRST match
+print(fruits.index("orange"))  # 3
+```
+
+Like a list, `index()` raises a `ValueError` if the value isn't in the tuple.
+
+The built-in functions all work on tuples too:
+
+```python
+numbers = (10, 20, 5, 30)
+print(len(numbers))   # 4     how many items
+print(sum(numbers))   # 65    add them up (items must be numbers)
+print(min(numbers))   # 5     smallest
+print(max(numbers))   # 30    largest
+```
+
+`sorted(numbers)` also works, but it returns a **list**, not a tuple:
+
+```python
+print(sorted(numbers))   # [5, 10, 20, 30]
 ```
 
 ### Converting between the two
@@ -396,6 +480,35 @@ point[0] = 10
 
 Tuples can't be changed, so this raises a `TypeError`. Make a new tuple instead: `point = (10, point[1])`. Or use a list if the value really needs to change.
 </details>
+
+**7.** For `t = (4, 8, 4, 1, 4)`, find how many times 4 appears, where the first 8 is, and the total of all items.
+
+<details>
+<summary>Answer</summary>
+
+```python
+t = (4, 8, 4, 1, 4)
+print(t.count(4))   # 3
+print(t.index(8))   # 1
+print(sum(t))       # 21
+```
+</details>
+
+---
+
+## 6. Quick reference
+
+| Task | List | Tuple |
+|---|---|---|
+| Add one item | `append(x)`, `insert(i, x)` | not possible |
+| Add many items | `extend(iterable)` | not possible |
+| Remove | `remove(x)`, `pop(i)`, `del lst[i]` | not possible |
+| Change an item | `lst[i] = x` | not possible |
+| Count / find | `count(x)`, `index(x)` | `count(x)`, `index(x)` |
+| Sort | `sort()`, `sorted(lst)` | `sorted(t)` (returns a list) |
+| Reverse | `reverse()`, `lst[::-1]` | `t[::-1]` |
+| Copy | `copy()`, `lst[:]` | not needed (can't change) |
+| Length, sum, min, max | `len(lst)`, `sum(lst)`, `min(lst)`, `max(lst)` | `len(t)`, `sum(t)`, `min(t)`, `max(t)` |
 
 ---
 
